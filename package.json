@@ -86,5 +86,8 @@
   },
   "eslintConfig": {
     "extends": "react-app"
+  },
+  "devDependencies": {
+    "flux": "^3.1.3"
   }
 }
