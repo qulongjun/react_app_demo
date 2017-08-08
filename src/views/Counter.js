@@ -3,41 +3,45 @@
  */
 import React, {Component, PropTypes} from 'react';
 
+import * as Actions from '../Actions';
+import CounterStore from '../stores/CounterStore';
+
 const buttonStyle = {
     margin: '10px'
 };
 
 class Counter extends Component {
     constructor(props) {
-        console.log('enter constructor: ' + props.caption);
         super(props);
 
+        this.onChange = this.onChange.bind(this);
         this.onClickIncrementButton = this.onClickIncrementButton.bind(this);
         this.onClickDecrementButton = this.onClickDecrementButton.bind(this);
         this.state = {
-            count: props.initValue
+            count: CounterStore.getCounterValues()[props.caption]
         }
 
     }
 
-    componentWillReceiveProps(nextProps) {
-        console.log('enter componentWillReceiveProps ' + this.props.caption)
-    }
-
-    componentWillMount() {
-        console.log('enter componentWillMount ' + this.props.caption);
+    componentWillUnmount() {
+        CounterStore.removeChangeListener(this.onChange);
     }
 
     componentDidMount() {
-        console.log('enter componentDidMount ' + this.props.caption);
+        CounterStore.addChangeListener(this.onChange);
+    }
+
+    onChange() {
+        const newCount = CounterStore.getCounterValues()[this.props.caption];
+        this.setState({count: newCount});
     }
 
     onClickIncrementButton() {
-        this.updateCount(true);
+        Actions.increment(this.props.caption);
     }
 
     onClickDecrementButton() {
-        this.updateCount(false);
+        Actions.decrement(this.props.caption);
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -45,15 +49,7 @@ class Counter extends Component {
             (nextState.count !== this.state.count);
     }
 
-    updateCount(isIncrement) {
-        const previousValue = this.state.count;
-        const newValue = isIncrement ? previousValue + 1 : previousValue - 1;
-        this.setState({count: newValue});
-        this.props.onUpdate(newValue, previousValue);
-    }
-
     render() {
-        console.log('enter render ' + this.props.caption);
         const {caption} = this.props;
         return (
             <div>
@@ -66,9 +62,7 @@ class Counter extends Component {
 }
 
 Counter.propTypes = {
-    caption: PropTypes.string.isRequired,
-    initValue: PropTypes.number,
-    onUpdate: PropTypes.func
+    caption: PropTypes.string.isRequired
 };
 Counter.defaultProps = {
     initValue: 0,
