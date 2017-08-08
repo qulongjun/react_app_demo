@@ -64,8 +64,4 @@ class Counter extends Component {
 Counter.propTypes = {
     caption: PropTypes.string.isRequired
 };
-Counter.defaultProps = {
-    initValue: 0,
-    onUpdate: f => f //什么都不做的函数
-};
 export default Counter;
